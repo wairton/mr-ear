@@ -23,6 +23,7 @@ def build_midi(sequence):
 
 
 
+
 class NoteFamily(object):
 	def __init__(self, name, zero, alt_name=0):
 		self.zero = zero
@@ -68,6 +69,16 @@ class Note(object):
             raise Exception('{} is not a valid note'.format(value))
         self._base = value
 
+    def __lt__(self, other):
+        return MidiTranslator.note_to_code(self) < MidiTranslator.note_to_code(other)
+
+    def __eq__(self, other):
+        return MidiTranslator.note_to_code(self) == MidiTranslator.note_to_code(other)
+
+    # TODO: should return 'semitone' or 'interval' objects
+    def __sub__(self, other):
+        return MidiTranslator.note_to_code(self) - MidiTranslator.note_to_code(other)
+
     @property
     def octave(self):
         return self._octave
@@ -87,10 +98,23 @@ class Note(object):
     def __str__(self):
         return "Note: {}{}".format(self.base.upper(), self.octave)
 
-
     # TODO for intervals, what about other notes?
+    # what about using operators like | to create chords?
     def __add__(self, interval):
-        print MidiTranslator.code_to_note(MidiTranslator.note_to_code(self) + interval.semitones)
+        if isinstance(interval, Semitones):
+            distance = interval.n
+        else:
+            distance = interval.semitones
+        return MidiTranslator.code_to_note(MidiTranslator.note_to_code(self) + distance)
+
+
+class Player(object):
+    def perform(self, notes):
+        build_midi(notes)
+        pygame.mixer.music.load("sample.mid")
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy():
+            pygame.time.wait(5)
 
 
 class Interval(object):
@@ -114,19 +138,34 @@ class Interval(object):
         return self._semitones
 
 
+# TODO this name is confusing...
+class Semitones(object):
+    def __init__(self, n=1):
+        self.n = n
+
+
 i = [
 	('uni', 0), ('second', 2), ('third', 4), ('fourth', 5),
     ('fifth', 7), ('sixth', 9), ('seventh', 11), ('octave', 12)
 ]
 
 
+
+def get_random_note(lower=None, higher=None):
+    lower = lower or Note('A', 0)
+    higher = higher or Note('C', 8)
+    n = rnd.randint(0, higher - lower)
+    print n, lower + Semitones(n)
+    Player().perform([lower + Semitones(n)])
+
+
 # A = 49
-A = Note('A', 4)
+A4 = Note('A', 4)
+get_random_note()
 # print Interval('7m')
 # print Interval('7m', False)
 # Note('Z', 1)
 
-A +  Interval('3m')
 
 import sys
 sys.exit(1)
