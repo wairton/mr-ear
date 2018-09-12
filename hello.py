@@ -24,7 +24,7 @@ def build_midi(sequence):
 
 
 
-class NoteFamily(object):
+class NoteFamily:
 	def __init__(self, name, zero, alt_name=0):
 		self.zero = zero
 
@@ -34,7 +34,7 @@ class NoteFamily(object):
 		return self.zero + 12 * n
 
 
-class MidiTranslator(object):
+class MidiTranslator:
     @classmethod
     def note_to_code(cls, note):
         # A0 = 21
@@ -54,7 +54,7 @@ class MidiTranslator(object):
         return Note(s[code % 12], code // 12)
 
 
-class Note(object):
+class Note:
     def __init__(self, base, octave):
         self.base = base
         self.octave = octave
@@ -108,7 +108,7 @@ class Note(object):
         return MidiTranslator.code_to_note(MidiTranslator.note_to_code(self) + distance)
 
 
-class Player(object):
+class Player:
     def perform(self, notes):
         build_midi(notes)
         pygame.mixer.music.load("sample.mid")
@@ -117,7 +117,7 @@ class Player(object):
             pygame.time.wait(5)
 
 
-class Interval(object):
+class Interval:
     # TODO: this tables only works for one octave
     _semi_to_symbol = {n: v for n, v in enumerate(['t', '2m', '2', '3m', '3', '4', '5m', '5', '6m', '6', '7m', '7'])}
     _symbol_to_semi = {v: n for n, v in enumerate(['t', '2m', '2', '3m', '3', '4', '5m', '5', '6m', '6', '7m', '7'])}
@@ -139,7 +139,7 @@ class Interval(object):
 
 
 # TODO this name is confusing...
-class Semitones(object):
+class Semitones:
     def __init__(self, n=1):
         self.n = n
 
@@ -155,15 +155,15 @@ def get_random_note(lower=None, higher=None):
     lower = lower or Note('A', 0)
     higher = higher or Note('C', 8)
     n = rnd.randint(0, higher - lower)
-    print n, lower + Semitones(n)
+    print(n, lower + Semitones(n))
     Player().perform([lower + Semitones(n)])
 
 
 # A = 49
 A4 = Note('A', 4)
 get_random_note()
-# print Interval('7m')
-# print Interval('7m', False)
+# print(Interval('7m'))
+# print(Interval('7m', False))
 # Note('Z', 1)
 
 
