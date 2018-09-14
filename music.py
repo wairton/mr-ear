@@ -1,4 +1,5 @@
-s = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
+SHARP_NOTES = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
+FLAT_NOTES = ['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab']
 
 
 i = [
@@ -115,3 +116,18 @@ class Interval:
 class Semitones:
     def __init__(self, n=1):
         self.n = n
+
+
+class _Notes:
+    def __init__(self):
+        expr = ((i, j) for i in SHARP_NOTES for j in range(1, 8))
+        for (i, j) in expr:
+            setattr(self, "{}{}".format(i, j), Note(i, j))
+
+    def __iter__(self):
+        expr = ((i, j) for i in SHARP_NOTES for j in range(1, 8))
+        for (i, j) in expr:
+            yield getattr(self, "{}{}".format(i, j))
+
+
+notes = _Notes()
