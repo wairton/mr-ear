@@ -1,7 +1,15 @@
 from music import Note
 from player import play
 
-A4 = Note('A', 4)
-play(A4)
-play(Note('B', 5))
-play(Note('G', 5))
+from music import notes, Semitones, Reference
+from exercise import build_ascending_scale_exercise
+
+
+intervals = [Semitones(i) for i in range(2, 9)]
+exs = build_ascending_scale_exercise(intervals=intervals)
+
+for (a, b, c) in exs:
+    print('-' * 50)
+    print(a, b, c)
+    play(a)
+    play(b)
