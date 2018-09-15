@@ -1,5 +1,9 @@
 SHARP_NOTES = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
+ATTR_SHARP_NOTES = ['A', 'AS', 'B', 'C', 'CS', 'D', 'DS', 'E', 'F', 'FS', 'G', 'GS']
 FLAT_NOTES = ['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab']
+
+NOTES_TABLE = {b:a for a, b in enumerate(SHARP_NOTES)}
+NOTES_TABLE.update({b:a for a,b in enumerate(ATTR_SHARP_NOTES)})
 
 
 i = [
@@ -12,19 +16,13 @@ class Reference:
     @classmethod
     def note_to_reference(cls, note):
         # A0 = 21
-        val = ord(note.base[0].lower()) - ord('a')
-        if len(note.base) > 1:
-            if note.base[1] == '#':
-                val += 1
-            else: # TODO error prone condition?
-                val -= 1
-            val = (val + 12) % 12
+        val = NOTES_TABLE[note.base.upper()]
         return val + 12 * note.octave
 
     @classmethod
     def reference_to_note(cls, code):
-        # TODO
-        pass
+        n = Note(SHARP_NOTES[code % 12], code // 12)
+        return n
 
 
 class NoteFamily:
@@ -73,7 +71,7 @@ class Note:
         self._octave = value
 
     def _is_base_valid(self, base):
-        return base.lower()[0] in 'abcdefg' and (len(base) == 1 or base[1] in 'b#')
+        return base.lower()[0] in 'abcdefg' and (len(base) == 1 or base[1] in 'b#S')
 
     def is_valid_octave(self, octave):
         return None
@@ -88,7 +86,7 @@ class Note:
             distance = interval.n
         else:
             distance = interval.semitones
-        return MidiTranslator.code_to_note(Reference.reference_to_code(self) + distance)
+        return Reference.reference_to_note(Reference.note_to_reference(self) + distance)
 
 
 class Interval:
@@ -117,17 +115,19 @@ class Semitones:
     def __init__(self, n=1):
         self.n = n
 
+    def __str__(self):
+        return "Semitone({})".format(self.n)
+
 
 class _Notes:
     def __init__(self):
-        expr = ((i, j) for i in SHARP_NOTES for j in range(1, 8))
+        expr = ((i, j) for i in ATTR_SHARP_NOTES for j in range(1, 8))
         for (i, j) in expr:
             setattr(self, "{}{}".format(i, j), Note(i, j))
 
     def __iter__(self):
-        expr = ((i, j) for i in SHARP_NOTES for j in range(1, 8))
+        expr = ((i, j) for i in ATTR_SHARP_NOTES for j in range(1, 8))
         for (i, j) in expr:
             yield getattr(self, "{}{}".format(i, j))
-
 
 notes = _Notes()
