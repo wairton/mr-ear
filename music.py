@@ -1,8 +1,10 @@
-SHARP_NOTES = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
-ATTR_SHARP_NOTES = ['A', 'AS', 'B', 'C', 'CS', 'D', 'DS', 'E', 'F', 'FS', 'G', 'GS']
-FLAT_NOTES = ['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab']
+SHARP_NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+ATTR_SHARP_NOTES = ['C', 'CS', 'D', 'DS', 'E', 'F', 'FS', 'G', 'GS', 'A', 'AS', 'B']
+ATTR_FLAT_NOTES = ['C', 'DF', 'D', 'EF', 'E', 'F', 'GF', 'G', 'AF', 'A', 'BF', 'B']
+FLAT_NOTES = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
 
 NOTES_TABLE = {b:a for a, b in enumerate(SHARP_NOTES)}
+
 NOTES_TABLE.update({b:a for a,b in enumerate(ATTR_SHARP_NOTES)})
 
 
@@ -89,10 +91,23 @@ class Note:
         return Reference.reference_to_note(Reference.note_to_reference(self) + distance)
 
 
+INTERVALS_SHORT = ['P1', 'm2', 'M2', 'm3', 'M3', 'P4', 'm5', 'M5', 'm6', 'M6', 'm7', 'M7', '8']
+
+INTERVALS_SHORT_SEMITONES = [(i, s) for s, i in enumerate(INTERVALS_SHORT)]
+
+INTERVALS_LONG = [
+    'Perfect unison', 'Minor second', 'Major second', 'Minor thrid',
+    'Major thrid', 'Perfect fourth', 'Minor fifth', 'Major fifth',
+    'Minor sixth', 'Major sixth', 'Minor seventh', 'Major seventh', 'Perfect octave'
+]
+
+INTERVALS_LONG_SEMITONES = [(i, s) for s, i in enumerate(INTERVALS_LONG)]
+
+
 class Interval:
     # TODO: this tables only works for one octave
-    _semi_to_symbol = {n: v for n, v in enumerate(['t', '2m', '2', '3m', '3', '4', '5m', '5', '6m', '6', '7m', '7'])}
-    _symbol_to_semi = {v: n for n, v in enumerate(['t', '2m', '2', '3m', '3', '4', '5m', '5', '6m', '6', '7m', '7'])}
+    _semi_to_symbol = {n: v for n, v in enumerate(INTERVALS_SHORT)}
+    _symbol_to_semi = {v: n for n, v in enumerate(INTERVALS_SHORT)}
 
     def __init__(self, symbol, ascending=True):
         self.ascending = ascending
